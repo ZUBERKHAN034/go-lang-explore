@@ -1,0 +1,17 @@
+go 1.20
+
+use (
+	./arrays
+	./conversion
+	./defer
+	./functions
+	./ifelse
+	./loops
+	./maps
+	./methods
+	./pointers
+	./slices
+	./structs
+	./switch
+	./user-input
+)

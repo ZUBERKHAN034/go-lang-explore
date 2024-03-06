@@ -1,0 +1,2 @@
+Hello ing the GO World!
+ This is a file handling in Go.
