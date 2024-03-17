@@ -42,40 +42,40 @@ func EncodeJson() {
 func DecodeJson() {
 
 	// a simple JSON string
-	coursesJsonString := `[
-		{
-			"name": "ReactJS",
-			"price": 299,
-			"platform": "LearnCodeOnline",
-			"tags": ["web-dev", "js"]
-		},
-		{
-			"name": "MERN",
-			"price": 199,
-			"platform": "LearnCodeOnline",
-			"tags": ["full-stack", "js"]
-		},
+	coursesJsonString := `
 		{
 			"name": "Angular",
 			"price": 399,
-			"platform": "LearnCodeOnline"
-		}
-	]`
+			"platform": "LearnCodeOnline",
+			"tags": ["full-stack", "js"]
+		}`
 
 	coursesJson := []byte(coursesJsonString)
 
 	isJson := json.Valid(coursesJson)
+	fmt.Println("Is JSON valid:", isJson)
 	if !isJson {
 		panic("Invalid JSON")
 	}
 
 	// decoding the JSON string to a slice of courses
-	var courses []course
+	var myCourse course
 
-	decodeErr := json.Unmarshal(coursesJson, &courses)
+	decodeErr := json.Unmarshal(coursesJson, &myCourse)
 	if decodeErr != nil {
 		panic(decodeErr)
 	}
 
-	fmt.Println("Decoded courses are:", courses)
+	fmt.Println("Decoded courses are:", myCourse)
+
+	// handling in the key value pair
+	var coursesMap map[string]interface{}
+	json.Unmarshal(coursesJson, &coursesMap)
+
+	fmt.Printf("%#v\n", coursesMap)
+
+	for key, value := range coursesMap {
+		fmt.Printf("Key: %v -> Value: %v and Type is %T\n", key, value, value)
+	}
+
 }
