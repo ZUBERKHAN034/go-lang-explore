@@ -17,6 +17,7 @@ func main() {
 	fmt.Println("JSON handling in GO lang...")
 
 	EncodeJson()
+	DecodeJson()
 }
 
 func EncodeJson() {
@@ -36,4 +37,45 @@ func EncodeJson() {
 
 	fmt.Println("Encoded JSON is:", string(coursesJson))
 
+}
+
+func DecodeJson() {
+
+	// a simple JSON string
+	coursesJsonString := `[
+		{
+			"name": "ReactJS",
+			"price": 299,
+			"platform": "LearnCodeOnline",
+			"tags": ["web-dev", "js"]
+		},
+		{
+			"name": "MERN",
+			"price": 199,
+			"platform": "LearnCodeOnline",
+			"tags": ["full-stack", "js"]
+		},
+		{
+			"name": "Angular",
+			"price": 399,
+			"platform": "LearnCodeOnline"
+		}
+	]`
+
+	coursesJson := []byte(coursesJsonString)
+
+	isJson := json.Valid(coursesJson)
+	if !isJson {
+		panic("Invalid JSON")
+	}
+
+	// decoding the JSON string to a slice of courses
+	var courses []course
+
+	decodeErr := json.Unmarshal(coursesJson, &courses)
+	if decodeErr != nil {
+		panic(decodeErr)
+	}
+
+	fmt.Println("Decoded courses are:", courses)
 }
