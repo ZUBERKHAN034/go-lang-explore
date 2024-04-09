@@ -9,6 +9,7 @@ use (
 	./loops
 	./maps
 	./methods
+	./my-modules
 	./pointers
 	./slices
 	./structs
