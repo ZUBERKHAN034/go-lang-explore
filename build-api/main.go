@@ -3,11 +3,9 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"math/rand"
 	"net/http"
-	"strconv"
-	"time"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 )
 
@@ -80,32 +78,31 @@ func createCourse(res http.ResponseWriter, req *http.Request) {
 	fmt.Println("Requesting create course...", req.URL.Path)
 	res.Header().Set("Content-Type", "application/json")
 
-	// if body is nil, return bad request
 	if req.Body == nil {
 		res.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(res).Encode(map[string]string{"message": "Invalid request body"})
 		return
 	}
+	defer req.Body.Close()
 
-	// if body not have any data, basically empty object
 	var course Course
-	_ = json.NewDecoder(req.Body).Decode(&course)
+	err := json.NewDecoder(req.Body).Decode(&course)
+	if err != nil {
+		res.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(res).Encode(map[string]string{"message": "Invalid JSON format"})
+		return
+	}
 
 	if course.IsEmpty() {
-		res.WriteHeader(http.StatusBadRequest)
+		res.WriteHeader(http.StatusUnprocessableEntity)
 		json.NewEncoder(res).Encode(map[string]string{"message": "Empty request body"})
 		return
 	}
 
-	// generate unique id in string format
-	// append the course to the courses
-
-	randomGenerator := rand.New(rand.NewSource(time.Now().UnixNano()))
-	course.ID = strconv.Itoa(randomGenerator.Intn(100))
+	course.ID = uuid.New().String()
 
 	courses = append(courses, course)
 
 	res.WriteHeader(http.StatusCreated)
 	json.NewEncoder(res).Encode(course)
-
 }
