@@ -106,3 +106,54 @@ func createCourse(res http.ResponseWriter, req *http.Request) {
 	res.WriteHeader(http.StatusCreated)
 	json.NewEncoder(res).Encode(course)
 }
+
+func updateCourse(res http.ResponseWriter, req *http.Request) {
+	fmt.Println("Requesting update course...", req.URL.Path)
+	res.Header().Set("Content-Type", "application/json")
+
+	params := mux.Vars(req)
+	id := params["id"]
+
+	for index, course := range courses {
+		if course.ID == id {
+			defer req.Body.Close()
+
+			var updatedCourse Course
+			err := json.NewDecoder(req.Body).Decode(&updatedCourse)
+			if err != nil {
+				res.WriteHeader(http.StatusBadRequest)
+				json.NewEncoder(res).Encode(map[string]string{"message": "Invalid JSON format"})
+				return
+			}
+
+			updatedCourse.ID = id          // Ensure the ID remains unchanged
+			courses[index] = updatedCourse // Update the course in place
+			json.NewEncoder(res).Encode(updatedCourse)
+			return
+		}
+	}
+
+	// If no course with the provided ID was found
+	res.WriteHeader(http.StatusNotFound)
+	json.NewEncoder(res).Encode(map[string]string{"message": "Course not found"})
+}
+
+func deleteCourse(res http.ResponseWriter, req *http.Request) {
+	fmt.Println("Requesting delete course...", req.URL.Path)
+	res.Header().Set("Content-Type", "application/json")
+
+	params := mux.Vars(req)
+	id := params["id"]
+
+	for index, course := range courses {
+		if course.ID == id {
+			courses = append(courses[:index], courses[index+1:]...)
+			json.NewEncoder(res).Encode(map[string]string{"message": "Course deleted successfully"})
+			return
+		}
+	}
+
+	// If no course with the provided ID was found
+	res.WriteHeader(http.StatusNotFound)
+	json.NewEncoder(res).Encode(map[string]string{"message": "Course not found"})
+}
